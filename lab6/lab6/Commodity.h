@@ -1,0 +1,64 @@
+#include <vector>
+#include <string.h>
+#include <stdio.h>
+#include <string>
+#include "tool.h"
+
+
+
+
+//商品类
+class Commodity{
+	private:
+		string name;   // 名称
+		
+		double price;    //价格
+		
+		string product_date;      //生产日期
+		
+		int life;     //保质期
+		
+		string expire_date;     //过期日期
+		
+		
+	public: 
+		string get_name();
+		string get_date();
+		string get_expire_date();  
+		Commodity(string name,double price,int life,string product_date);
+
+		double get_price();
+		
+		//double get_sell_price(double discount = 1);
+};
+
+
+Commodity::Commodity(string name,double price,int life,string product_date) {
+	this -> name = name;
+	this -> price = price;
+	this -> life = life;
+	this -> product_date = product_date;
+	this -> expire_date = date_add(product_date,life-1);
+}
+
+string Commodity::get_name(){
+	return this -> name;
+}
+
+string Commodity::get_date(){
+	return this -> product_date;
+}
+
+string Commodity::get_expire_date(){
+	return this -> expire_date;
+}
+
+/*
+double Commodity::get_sell_price(double discount){
+	return price * discount;
+}
+*/
+
+double Commodity::get_price(){
+	return this -> price;
+}

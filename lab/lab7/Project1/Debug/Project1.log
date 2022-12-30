@@ -1,0 +1,5 @@
+﻿  lab7.cpp
+D:\大二下\面向对象程序设计\lab\lab7\Project1\lab7.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\大二下\面向对象程序设计\lab\lab7\Project1\lab7.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\大二下\面向对象程序设计\lab\lab7\Project1\lab7.cpp(33,22): warning C4018: “<”: 有符号/无符号不匹配
+  Project1.vcxproj -> D:\大二下\面向对象程序设计\lab\lab7\Project1\Debug\Project1.exe

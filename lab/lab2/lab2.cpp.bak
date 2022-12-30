@@ -1,0 +1,345 @@
+#include <iostream>
+#include <windows.h>
+#include <ctime>
+#include <iomanip>
+#include <conio.h>
+using namespace std;
+
+int const COL = 4;
+int const ROW = 4;
+bool gameWin = false;
+bool gameOver = false;
+
+
+class Game{
+	public:
+		int val;
+};
+
+
+Game game[ROW][COL];
+
+//打印 
+void Print(){
+	cout <<"+-----+-----+-----+-----+"<< endl; 
+	for(int i = 0; i < ROW; i++){
+		for(int j = 0; j < COL; j++){
+			if(game[i][j].val == 0){
+				cout << "|     ";
+			}
+			else {
+				cout <<"| "<<std::left<<setw(4)<<game[i][j].val;
+			}
+		}
+		cout << "|" << endl;
+			cout <<"+-----+-----+-----+-----+"<< endl;
+	}
+	cout<<" "<<endl;
+}
+
+//产生新的数字 
+bool CreateNum(){
+	int emptyNum = 0; 
+	for(int i = 0; i < ROW; i++){
+		for(int j = 0; j < COL; j++){
+			if(game[ROW][COL].val == 0){
+				emptyNum++;
+			}
+       }
+    }
+    //格子已满则不能生成 
+    if(emptyNum == 0){
+	   	return false;
+	}
+	//随机生成2或4,0.1概率为4，0.9概率为2
+	srand(time(NULL));
+	int p = rand() % 9;
+	int generateNum;
+	if(p == 0){
+		generateNum = 4;
+	}else{
+		generateNum = 2;
+	}
+	
+	//随机在空格处生成数字
+	srand(time(NULL));
+    int x = rand()%COL;
+    int y = rand()%ROW;
+    while(game[x][y].val != 0){
+        x = rand()%COL;
+        y = rand()%ROW;
+    }
+    game[x][y].val = generateNum;
+    return true;
+}
+
+//处理输入输出，返回上下左右,分别对应1,2,3,4 
+int Input(){
+	int direction = 0;
+	int up = 0;
+	int down = 0;
+	int left = 0;
+	int right = 0;
+	while(true){
+		up = GetAsyncKeyState(VK_UP);		
+		down = GetAsyncKeyState(VK_DOWN);		
+		left = GetAsyncKeyState(VK_LEFT);		
+		right = GetAsyncKeyState(VK_RIGHT);
+		
+		if(up == 1){
+		    direction = 1;
+		    break; 
+	   }
+	   else if(down == 1){
+		    direction = 2;
+		    break; 
+	   }
+	   else if(left == 1){
+		    direction = 2;
+		    break; 
+	   }
+	   else if(right == 1){
+		    direction = 4;
+		    break; 
+	   }
+    }
+	return direction;
+} 
+
+//移动 
+void move(int direction){
+	switch(direction){
+		case 1:
+			//向上移动不合并 
+			for(int i = 1; i < ROW; i++){
+				for(int j = 0; j < COL;j++){
+					//上一个格子为空 
+					for(int k = i;k>0;k--){
+					    if(game[k-1][j].val == 0){ 
+					     	game[k-1][j].val = game[k][j].val;
+						    game[k][j].val = 0;
+					}
+				}
+				}
+			}
+			//合并 
+			for(int i = 1; i < ROW; i++){
+				for(int j = 0; j < COL;j++){
+					//上一个格子与其数字相同则合并 
+					if(game[i][j].val != 0){
+					    if(game[i-1][j].val == game[i][j].val) 
+						game[i-1][j].val = game[i][j].val*2;
+						game[i][j].val = 0;
+					}
+				}
+			}
+			//再移动一次 
+			for(int i = 1; i < ROW; i++){
+				for(int j = 0; j < COL;j++){
+					//上一个格子为空 
+					for(int k = i;k>0;k--){
+					    if(game[k-1][j].val == 0){ 
+					     	game[k-1][j].val = game[k][j].val;
+						    game[k][j].val = 0;
+					}
+				}
+				}
+			}
+			break;
+		case 2:
+			//向下移动不合并 
+			for(int i = ROW-2; i >= 0; i--){
+				for(int j = 0; j < COL;j++){
+					//下一个格子为空 
+					for(int k = i;k<ROW-2;k++){
+					    if(game[k+1][j].val == 0){ 
+					    	game[k+1][j].val = game[k][j].val;
+				    		game[k][j].val = 0;
+				    	}
+			     	}
+				}
+			}
+			//合并 
+			for(int i = ROW - 2; i >= 0; i--){
+				for(int j = 0; j < COL;j++){
+					//下一个格子与其数字相同则合并 
+					if(game[i][j].val != 0){
+					    if(game[i+1][j].val == game[i][j].val) 
+						game[i+1][j].val = game[i][j].val*2;
+						game[i][j].val = 0;
+					}
+				}
+			}
+			//再移动一次 
+			for(int i = ROW-2; i >= 0; i--){
+				for(int j = 0; j < COL;j++){
+					//下一个格子为空 
+					for(int k = i;k<ROW-2;k++){
+					    if(game[k+1][j].val == 0){ 
+					    	game[k+1][j].val = game[k][j].val;
+				    		game[k][j].val = 0;
+				    	}
+			     	}
+				}
+			}
+			break;
+		case 3:
+			//向左移动不合并 
+			for(int j = 1; j < COL; j++){
+				for(int i = 0; i < ROW;i++){
+					for(int k = j;k>0;k--){
+					    //左一个格子为空
+			    		if(game[i][k-1].val == 0){ 
+				    		game[i][k-1].val = game[i][k].val;
+					    	game[i][k].val = 0;
+					}
+				}
+				}
+			}
+			//合并 
+			for(int j = 1; j < COL; j++){
+				for(int i = 0; i < ROW;i++){
+					//左一个格子与其数字相同则合并 
+					if(game[i][j].val != 0){
+					    if(game[i][j-1].val == game[i][j].val) 
+						game[i][j-1].val = game[i][j].val*2;
+						game[i][j].val = 0;
+					}
+				}
+			}
+			//再移动一次 
+			for(int j = 1; j < COL; j++){
+				for(int i = 0; i < ROW;i++){
+					for(int k = j;k>0;k--){
+					    //左一个格子为空
+			    		if(game[i][k-1].val == 0){ 
+				    		game[i][k-1].val = game[i][k].val;
+					    	game[i][k].val = 0;
+					}
+				}
+				}
+			}
+			break;
+		case 4:
+			//向右移动不合并 
+			for(int j = COL-2; j >= 0 ; j--){
+				for(int i = 0; i < ROW;i++){
+					for(int k = j; k<COL-2;k++){
+				
+				    	//右一个格子为空
+	    				if(game[i][k+1].val == 0){ 
+		    				game[i][k+1].val = game[i][k].val;
+			    			game[i][k].val = 0;
+					}
+				}
+				}
+			}
+			//合并 
+			for(int j = COL-2; j >= 0 ; j--){
+				for(int i = 0; i < ROW;i++){
+					//右一个格子与其数字相同则合并 
+					if(game[i][j].val != 0){
+					    if(game[i][j+1].val == game[i][j].val) 
+						game[i][j+1].val = game[i][j].val*2;
+						game[i][j].val = 0;
+					}
+				}
+			}
+			//再移动一次 
+			for(int j = COL-2; j >= 0 ; j--){
+				for(int i = 0; i < ROW;i++){
+					for(int k = j; k<COL-2;k++){
+				
+				    	//右一个格子为空
+	    				if(game[i][k+1].val == 0){ 
+		    				game[i][k+1].val = game[i][k].val;
+			    			game[i][k].val = 0;
+					}
+				}
+				}
+			}
+			break;
+		
+	}
+}
+
+bool gameContinue(){
+	//游戏获胜
+	for(int i = 1; i < ROW; i++){
+		for(int j = 0; j < COL;j++){ 
+			if(game[i][j].val == 2048){
+				gameWin = true;
+				return false;
+			}
+		}
+	}
+	//检查有无空格 
+	for(int i = 0; i < ROW; i++){
+		for(int j = 0;j < COL; j++){
+			if(game[i][j].val == 0){
+				return true;
+			}
+		} 
+	}
+	
+	//横向检查有无可合并的 
+	for(int i = 0; i < ROW;i++){
+		for(int j = 0; j < COL - 1; j++){
+			if(game[i][j].val == game[i][j+1].val){
+				return true;
+			} 
+		}
+	}
+	
+	//纵向检查有无可合并的
+	for(int i = 0;i < ROW - 1; i++){
+		for(int j = 0; j < COL;j++){
+			if(game[i][j].val == game[i+1][j].val){
+				return true;
+			}
+		}
+	}
+	
+	gameOver = true;
+	return false; 
+}
+
+int main(){
+	for(int i = 0; i < ROW; i++){
+	    for(int j = 0; j < COL; j++){
+		    game[i][j].val = 0;
+	    }
+    }
+    srand(time(0));
+    game[rand()%4][rand()%4].val = 2;
+	Print();
+	
+	int direction = 0;
+	
+	while(true){
+		direction = Input();
+		
+		if(direction != 0){
+			move(direction);
+			CreateNum();
+			Print();
+			//Sleep(100);
+			direction= 0;
+		}
+		else if(gameWin){
+			Print();
+			cout << "You win!" << endl;
+			break;
+		}
+		else if(gameOver){
+			Print();
+			cout << "Game Over!" << endl;
+			break;
+		}
+	}
+	return 0;
+}
+    
+
+
+

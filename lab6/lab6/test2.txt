@@ -1,0 +1,5 @@
+commodity_name	discount
+bread	0.5
+milk	
+milk	0.5
+fruit	0.5

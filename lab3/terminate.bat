@@ -1,0 +1,2 @@
+TASKKILL /IM lab3.exe
+EXIT 0

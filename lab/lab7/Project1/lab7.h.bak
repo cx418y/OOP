@@ -1,0 +1,188 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+
+using namespace std;
+using std::ostringstream;
+
+const int maximum = 100;
+
+class BigInt {
+public:
+
+	vector<int> get_digits();
+
+	BigInt(string s);   //构造函数，将string转换成BigInt
+
+	string output();    //将bitint转换成string输出
+
+	int flag = 0; //进位标志
+
+	int sign = 0;  //正负标志
+
+	BigInt operator+(BigInt a);
+
+	BigInt operator-(BigInt a);
+
+	friend ostream& operator<<(ostream& output, BigInt& a);
+
+	friend istream& operator>>(istream& input, BigInt& a);
+
+	vector<int> digitals;
+
+};
+
+//初始化
+BigInt::BigInt(string s) {
+	if (s != ""){
+		for (int i = s.size(); i > 0; i--) {
+			if (s.substr(i - 1, 1) == "-") {
+				sign = -1;
+			}
+			else {
+				int a = stoi(s.substr(i - 1, 1));
+				this->digitals.push_back(a);
+			}
+		}
+	}
+}
+
+
+
+string BigInt::output() {
+	ostringstream oss;
+	if (sign == -1) {
+		oss << "-";
+	}
+	for (int j = digitals.size()-1; j >= 0; j--) {
+	    oss << digitals[j];
+	}
+	return oss.str();
+}
+
+vector<int> BigInt::get_digits() {
+	return this -> digitals;
+}
+
+//加法重载
+BigInt BigInt::operator+(BigInt a) {
+	BigInt result = BigInt("");
+	vector<int> num1(digitals);
+	vector<int> num2(a.get_digits());
+
+	int maxlen = num1.size() >= num2.size() ? num1.size() : num2.size();
+	int minlen = num1.size() < num2.size() ? num1.size() : num2.size();
+
+	if (num1.size() > num2.size()) {
+		for (int i = minlen; i < maxlen; i++) {
+			num2.push_back(0);   //用0补齐，让两个数位数一样		
+		}
+	}
+	else if (num1.size() < num2.size()) {
+		for (int i = minlen; i < maxlen; i++) {
+			num1.push_back(0);   //用0补齐，让两个数位数一样
+		}
+	}
+
+	for (int i = 0; i < maxlen; i++) {
+		int n = num1[i] + num2[i] + flag;
+		result.digitals.push_back(n % 10);
+		if (n >= 10) {
+			flag = 1;  //进位
+		}
+		else {
+			flag = 0;
+		}
+	}
+
+	if (flag == 1) {
+		result.digitals.push_back(1);
+	}
+
+	return result;
+}
+
+//减法重载
+BigInt BigInt::operator-(BigInt a) {
+	BigInt result = BigInt("");
+
+	vector<int> num1(digitals);
+	vector<int> num2(a.get_digits());
+
+	//比较大小交换num1和num2的位置，设置result的正负
+	if (this->digitals.size() < a.digitals.size()){
+		vector<int> temp(num1);
+		num1 = num2;
+		num2 = temp;
+		result.sign = -1;  //结果为负
+	}else if (this->digitals.size() == a.digitals.size()){
+		for (int i = num1.size() - 1; i >= 0; i--) {
+			if (num2[i] > num1[i]) {
+				vector<int> temp(num1);
+				num1 = num2;
+				num2 = temp;
+				result.sign = -1;  //结果为负
+				break;
+			}else if(num2[i] < num1[i]){
+				break;
+			}
+		}
+
+	}
+	
+	int maxlen = num1.size();
+	int minlen = num2.size();
+	
+	if (num1.size() > num2.size()) {
+		for (int i = minlen; i < maxlen; i++) {
+			num2.push_back(0);    //用0补齐，让两个数位数一样
+		}
+	}
+
+	for (int i = 0; i < maxlen-1; i++) {
+		int n;
+		if ((num1[i] + flag - num2[i]) < 0) {
+			n = num1[i] - num2[i] + flag + 10;  //借位
+			result.digitals.push_back(n);
+			flag = -1;
+		}
+		else {
+			n = num1[i] - num2[i] + flag;
+			result.digitals.push_back(n);
+			flag = 0;
+		}
+	}
+
+	//首位
+	int m = (num1[maxlen-1] + flag - num2[maxlen-1]);
+	if(m!=0){
+		result.digitals.push_back(m);
+	}
+	
+	return result;
+}
+
+//输出流重载
+ostream& operator<<(ostream& output, BigInt& a) {
+	output << a.output();
+	return output;
+}
+
+//输入流重载
+istream& operator>>(istream& input, BigInt& a)
+{
+	string s;
+
+    input >> s;
+	BigInt temp = BigInt(s);
+	a.digitals = temp.digitals;
+	cout<< "test:" <<a.digitals[0] << endl;
+
+	
+	return input;
+}
+
+
+
+

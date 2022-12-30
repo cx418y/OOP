@@ -1,0 +1,5 @@
+name	price	life(days)	product_date
+milk	5.5	7	2021/5/1
+milk	5.5	7	2021/4/26
+fruit	4.2	3	2021/4/29
+fruit	4.2	4	2021/4/29
